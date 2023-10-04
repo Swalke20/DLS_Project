@@ -21,7 +21,7 @@ match_id = []
 for f in filenames:
     match_id.append(f[62:-5])
 
-match_id [0:10]
+print(match_id [0:10])
 match_id_col = ['Match ID']
 match_id = pd.DataFrame(match_id, columns = match_id_col)
 match_id
@@ -164,7 +164,7 @@ clean_df['Start Date'][2201]
 
 # Choose the ODIs from Jan 2002 and end of 2022
 mask = (clean_df['Start Date'] >= pd.Timestamp('2001-12-31')) & (clean_df['Start Date'] < pd.Timestamp('2023-01-01'))
-display(clean_df.loc[mask])
+clean_df.loc[mask]
 clean_df = clean_df.loc[mask]
 clean_df.shape
 clean_df=clean_df.drop(columns=['info.dates'])
@@ -220,159 +220,192 @@ matches.iloc[0]['info.players']['Australia']
 matches.iloc[0]['innings'][0]['powerplays']
 
 
-def create_table(data):
-    innings = [0,1]
-    no_result = 0
-    no_powerplay = 0
-    dl = 0
-    delivery_df = pd.DataFrame()
-    for index, row in data.iterrows():
-        batting_team = []
-        innings_num = []
-        over_col = []
-        ball_col = []
-        match = []
-        date = []
-        runs = []
-        running_total = []
-        wickets_taken = []
-        batter_out = []
-        start_team = []
-        remaining_team = []
-        powerplays = []
-        venue = []
-        winner = []
-        missing_result = []
-        first_team_innings = []
-        first_team_overandball = []
-        remaining_over_col = []
-        remaining_ball_col = []
-        wickets_remaining = []
-        extras=[]
-        remainder=[]
-        total_overs = []
+innings = [0,1]
+no_result = 0
+no_powerplay = 0
+dl = 0
+delivery_df = pd.DataFrame()
+for index, row in matches.iterrows():
+    batting_team = []
+    innings_num = []
+    over_col = []
+    ball_col = []
+    match = []
+    date = []
+    runs = []
+    running_total = []
+    wickets_taken = []
+    batter_out = []
+    start_team = []
+    remaining_team = []
+    powerplays = []
+    venue = []
+    winner = []
+    missing_result = []
+    first_team_innings = []
+    first_team_overandball = []
+    remaining_over_col = []
+    remaining_ball_col = []
+    wickets_remaining = []
+    extras=[]
+    remainder=[]
+    total_overs = []
 
 
-        try:
-            if row['info.outcome']['result']=='no result': 
-                no_result+=1
-                continue
-            if row['info.outcome']['method'] == "D/L":
-                dl+=1
-                continue
+    try:
+        if row['info.outcome']['result']=='no result': 
+            no_result+=1
+            continue
+        if row['info.outcome']['method'] == "D/L":
+            dl+=1
+            continue
 
-        except KeyError:
-            for num in innings:
-                cumulative_runs = 0
-                team = row['innings'][num]['team']
-                starting_team = row['info.players'][team]
-                current_team = starting_team.copy()
-                wicket_count = 0
+    except KeyError:
+        for num in innings:
+            cumulative_runs = 0
+            team = row['innings'][num]['team']
+            starting_team = row['info.players'][team]
+            current_team = starting_team.copy()
+            wicket_count = 0
 
 
-                for over in row['innings'][num]['overs']:
-                    ball_count = 0
-                    for ball in row['innings'][num]['overs'][over['over']]['deliveries']:
+            for over in row['innings'][num]['overs']:
+                ball_count = 0
+                for ball in row['innings'][num]['overs'][over['over']]['deliveries']:
 
-                        if 'extras' in ball:
-                            if 'noballs' in ball['extras']:
-                                extras.append("noballs")                            
+                    if 'extras' in ball:
+                        if 'noballs' in ball['extras']:
+                            extras.append("noballs")                            
 
-                            elif 'wides' in ball['extras']:
-                                extras.append("wides")
+                        elif 'wides' in ball['extras']:
+                            extras.append("wides")
 
-                            else:
-                                ball_count+=1
-                                extras.append("other")
                         else:
                             ball_count+=1
-                            extras.append("N/E")
+                            extras.append("other")
+                    else:
+                        ball_count+=1
+                        extras.append("N/E")
 
-                        try:
-                            powerplays.append(row['innings'][num]['powerplays'])
-                        except KeyError:
-                            no_powerplay+=1
-                            powerplays.append('NP')                      
+                    try:
+                        powerplays.append(row['innings'][num]['powerplays'])
+                    except KeyError:
+                        no_powerplay+=1
+                        powerplays.append('NP')                      
 
-                        try:
-                            batter_out.append(ball['wickets'][0]['player_out'])
-                            if ball['wickets'][0]['kind'] != "retired hurt":
-                                wicket_count+=1
-                            current_team.remove(ball['wickets'][0]['player_out'])
-                            #remove the player from the list current_team
-                        except KeyError:
-                            #no wicket
-                            batter_out.append('NW')
-                            pass
+                    try:
+                        batter_out.append(ball['wickets'][0]['player_out'])
+                        if ball['wickets'][0]['kind'] != "retired hurt":
+                            wicket_count+=1
+                        current_team.remove(ball['wickets'][0]['player_out'])
+                        #remove the player from the list current_team
+                    except KeyError:
+                        #no wicket
+                        batter_out.append('NW')
+                        pass
 
-                        try:
-                            winner.append(row['info.outcome']['winner']) 
-                        except:
-                            winner.append(row['info.outcome']['result'])
+                    try:
+                        winner.append(row['info.outcome']['winner']) 
+                    except:
+                        winner.append(row['info.outcome']['result'])
 
-                        #ball_count needs to repeat if the ball had an extra?
-
-
-
-
-                        batting_team.append(team)
-                        innings_num.append(str(num+1))
-                        over_col.append(over['over'])
-                        match.append(row['Match ID'])
-                        date.append(row['Start Date'])
-                        ball_col.append(ball_count)
-                        runs.append(ball['runs']['total'])
-                        cumulative_runs+=ball['runs']['total']
-                        running_total.append(cumulative_runs)
-                        wickets_taken.append(wicket_count)
-                        start_team.append(starting_team)
-                        remaining_team.append(current_team.copy())                    
-                        venue_list = [x.strip() for x in row['info.venue'].split(',')]
-                        venue.append(venue_list)
-                        remaining_over = 49-(over['over'])
-                        remaining_ball = 6-ball_count
-                        # There are 21 rows where ball count gets to 7 because there's 7 balls listed in the over in the original data.  
-                        #No explanation as to why so assumption is that this is an error.  According to search this could be umpire error
-                        if remaining_ball<0:
-                            remaining_ball = 0
-                        remaining_over_col.append(remaining_over)
-                        remaining_ball_col.append(remaining_ball)
-
-                        #happens when there's a wide or noball on 1st ball of over.  Number wouldn't be 
-                        if remaining_ball ==6:
-                            remainder.append(str(remaining_over +1))
-
-                        #because the dl_df table doesn't have the remainder as 49.0 for example, it has it as 49
-                        elif remaining_ball == 0:
-                            remainder.append(str(remaining_over))
-                        else:
-                            remainder.append(str(remaining_over)+"."+str(remaining_ball)) 
-                        wickets_remaining.append(str(10-wicket_count))
-
-                for over in row['innings'][num]['overs']:
-                    for ball in row['innings'][num]['overs'][over['over']]['deliveries']:
-                        if num == 0:
-                            first_team_runs = running_total[-1]
-                            first_team_innings.append("NaN")
-                            first_team_overs = over_col[-1]
-                            first_team_balls = ball_col[-1]
-                            first_team_overandball.append("NaN")
-                        else:
-                            first_team_innings.append(first_team_runs)
-                            first_team_overandball.append(first_team_overs+first_team_balls)
+                    #ball_count needs to repeat if the ball had an extra?
 
 
 
 
+                    batting_team.append(team)
+                    innings_num.append(str(num+1))
+                    over_col.append(over['over'])
+                    match.append(row['Match ID'])
+                    date.append(row['Start Date'])
+                    ball_col.append(ball_count)
+                    runs.append(ball['runs']['total'])
+                    cumulative_runs+=ball['runs']['total']
+                    running_total.append(cumulative_runs)
+                    wickets_taken.append(wicket_count)
+                    start_team.append(starting_team)
+                    remaining_team.append(current_team.copy())                    
+                    venue_list = [x.strip() for x in row['info.venue'].split(',')]
+                    venue.append(venue_list)
+                    remaining_over = 49-(over['over'])
+                    remaining_ball = 6-ball_count
+                    # There are 21 rows where ball count gets to 7 because there's 7 balls listed in the over in the original data.  
+                    #No explanation as to why so assumption is that this is an error.  According to search this could be umpire error
+                    if remaining_ball<0:
+                        remaining_ball = 0
+                    remaining_over_col.append(remaining_over)
+                    remaining_ball_col.append(remaining_ball)
+
+                    #happens when there's a wide or noball on 1st ball of over.  Number wouldn't be 
+                    if remaining_ball ==6:
+                        remainder.append(str(remaining_over +1))
+
+                    #because the dl_df table doesn't have the remainder as 49.0 for example, it has it as 49
+                    elif remaining_ball == 0:
+                        remainder.append(str(remaining_over))
+                    else:
+                        remainder.append(str(remaining_over)+"."+str(remaining_ball)) 
+                    wickets_remaining.append(str(10-wicket_count))
+
+            for over in row['innings'][num]['overs']:
+                for ball in row['innings'][num]['overs'][over['over']]['deliveries']:
+                    if num == 0:
+                        first_team_runs = running_total[-1]
+                        first_team_innings.append("NaN")
+                        first_team_overs = over_col[-1]
+                        first_team_balls = ball_col[-1]
+                        first_team_overandball.append("NaN")
+                    else:
+                        first_team_innings.append(first_team_runs)
+                        first_team_overandball.append(first_team_overs+first_team_balls)
 
 
-        loop_df = pd.DataFrame({'batting_team': batting_team, 'innings_num': innings_num, 'over_col': over_col, 'ball_col': ball_col, 'Match ID': match, 'Start Date': date, 'Runs': runs, 'Running Total': running_total, 'Batter out': batter_out, 'Wickets taken': wickets_taken, 'Start Team': start_team, 'Remaining Team': remaining_team, 'Powerplays': powerplays, 'Venue': venue, 'Winner': winner, 'First Team Innings': first_team_innings, 'Remaining Overs': remaining_over_col, 'Remaining Balls': remaining_ball_col, 'Remainder': remainder, 'Wickets Remaining': wickets_remaining, 'Extras': extras, 'Over and Balls Total': first_team_overandball})
-        delivery_df = pd.concat([delivery_df,loop_df])
+
+
+
+
+    loop_df = pd.DataFrame({'batting_team': batting_team, 'innings_num': innings_num, 'over_col': over_col, 'ball_col': ball_col, 'Match ID': match, 'Start Date': date, 'Runs': runs, 'Running Total': running_total, 'Batter out': batter_out, 'Wickets taken': wickets_taken, 'Start Team': start_team, 'Remaining Team': remaining_team, 'Powerplays': powerplays, 'Venue': venue, 'Winner': winner, 'First Team Innings': first_team_innings, 'Remaining Overs': remaining_over_col, 'Remaining Balls': remaining_ball_col, 'Remainder': remainder, 'Wickets Remaining': wickets_remaining, 'Extras': extras, 'Over and Balls Total': first_team_overandball})
+    delivery_df = pd.concat([delivery_df,loop_df])
 
     #missing powerplay data for some row?
 
-create_table(matches)
-
-delivery_df
+print(delivery_df)
 print(len(delivery_df))
-delivery_df.iloc[328]
+print(delivery_df.iloc[328])
+
+first_team_overs
+delivery_df['Over and Balls Total']
+print(len(delivery_df))
+print(delivery_df.iloc[328])
+
+# Remaining ball in over more complex - may be more than 6 because of extras
+
+# https://cricsheet.org/format/json/#delivery-data   
+# https://en.wikipedia.org/wiki/Extra_(cricket)
+
+# Do I need to make sure that first innings reached 50 therefore?
+
+print(first_team_innings)
+
+# Outcome can be:
+# 
+# result
+# winner
+# tie
+
+print(delivery_df)
+
+# Remove the 1st innings
+delivery_df = delivery_df[delivery_df['innings_num'].str.contains("2")]
+
+print(delivery_df)
+
+delivery_df = delivery_df.reset_index(drop=True)
+
+delivery_df[delivery_df['Extras'].str.contains('N/E')==True]
+print(no_result)
+print(dl)
+print(no_powerplay)
+
+#948066 where matches without powerplay information are removed
