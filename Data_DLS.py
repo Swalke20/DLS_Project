@@ -409,3 +409,49 @@ print(dl)
 print(no_powerplay)
 
 #948066 where matches without powerplay information are removed
+
+delivery_df.iloc[0]['Powerplays'][1]
+
+#df_filtered = df[df['info.balls_per_over']!=6]
+no_powerplay_df = delivery_df[delivery_df['Powerplays']=='NP']
+no_powerplay_df = no_powerplay_df[~no_powerplay_df.duplicated(subset=['Match ID'])].copy()
+
+#Matches with missing powerplay data come from 2002 - 2005
+no_powerplay_df['Start Date'].sort_values()
+
+powerplay_df = delivery_df[delivery_df['Powerplays']!='NP']
+powerplay_df = powerplay_df[~powerplay_df.duplicated(subset=['Match ID'])].copy()
+
+powerplay_df.sort_values('Start Date', ascending=True)
+powerplay_df = powerplay_df.reset_index(drop=True)
+powerplay_df.iloc[0]['Powerplays']
+powerplay_df.iloc[1729]['Powerplays']
+delivery_df['Powerplays']
+
+
+matches.iloc[135]['innings'][0]
+delivery_df.iloc[200]['Start Team']
+delivery_df.iloc[200]['Remaining Team']
+delivery_df.iloc[200]['Wickets taken']
+delivery_df.iloc[400]
+
+#Players.  Read in two sets of data - from ESPN cricketers data and Wikipedia
+cricketers_df = pd.read_csv("C:\Sophie Folder\Birkbeck\Project\Data\Cricketers\Players.csv")
+cricketers_df
+cricketers_df = cricketers_df[['Full name', 'Playing role']]
+
+wiki_df = pd.read_csv("C:\Sophie Folder\Birkbeck\Project\Data\Cricketers\Wiki_Players.csv")
+wiki_df = wiki_df[['fullname', 'role']]
+wiki_df.shape
+wiki_df
+
+wiki_df = wiki_df.dropna()
+wiki_df.shape
+wiki_df
+
+wiki_df.rename(columns={'fullname': 'Name', 'role': 'Playing role'}, inplace=True)
+
+cricketers_df = cricketers_df.dropna()
+cricketers_df.rename(columns={'Full name': 'Name'}, inplace=True)
+cricketers_df['Name']
+print(cricketers_df[cricketers_df['Name'].str.contains("Coetzer")])
