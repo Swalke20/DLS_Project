@@ -12,22 +12,25 @@ len(cricketer_filenames)
 
 dud_files = []
 
+frames = []
 counter = 0
 for file in cricketer_filenames:
     try: 
         with open(file) as f:
             d=json.load(f)
             d=pd.json_normalize(d, max_level=1)
-        df = pd.concat([df,d])
+        frames.append(d)
+        #df = pd.concat([df,d])
         counter+=1
     
     except:
         dud_files.append(file)
         counter+=1
     print(counter)
+df = pd.concat(frames)
 
-len(dud_files)
-print(df)
+print(df.iloc[0])
+print(len(dud_files))
 full_csv = df.to_csv('full_csv')
 
 wiki_df = df[['name','role']]
