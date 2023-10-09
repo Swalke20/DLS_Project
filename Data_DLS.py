@@ -584,3 +584,41 @@ missing_rows = long_cricketers_df[long_cricketers_df.isna().any(axis=1)]
 
 
 long_cricketers_df.drop(['Playing role'], axis=1, inplace=True)
+
+#Splitting names into first name, middle name etc, then taking the initials for all names but surnames and creating 
+
+name_list = []
+for index, row in long_cricketers_df.iterrows():
+    name_list.append(row['Name'].split())
+
+initial_name= []
+for n in name_list:
+    str = ''
+    for i in range(0,len(n)):
+        if i<len(n)-1:
+            str+=n[i][0]
+        if i == len(n)-1:
+            str+=' '
+            str+= n[i]
+    initial_name.append(str)
+
+print(initial_name)
+initial_name_df = pd.DataFrame(initial_name)
+print(initial_name_df)
+
+
+long_cricketers_df
+long_cricketers_df['I_Name'] = initial_name_df[0]
+
+long_cricketers_df
+long_cricketers_df[long_cricketers_df['Name'].str.contains("Codrington")]
+
+
+full_name_dict = dict(zip(long_cricketers_df.Name, long_cricketers_df.Value))
+print(full_name_dict)
+
+initial_name_dict = dict(zip(long_cricketers_df.I_Name, long_cricketers_df.Value))
+print(initial_name_dict)
+
+full_name_dict.update(initial_name_dict)
+full_name_dict['Z Haider']
