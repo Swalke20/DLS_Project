@@ -409,3 +409,178 @@ print(dl)
 print(no_powerplay)
 
 #948066 where matches without powerplay information are removed
+
+#df_filtered = df[df['info.balls_per_over']!=6]
+
+no_powerplay_df = delivery_df[delivery_df['Powerplays']=='NP']
+no_powerplay_df = no_powerplay_df[~no_powerplay_df.duplicated(subset=['Match ID'])].copy()
+
+#Matches with missing powerplay data come from 2002 - 2005
+no_powerplay_df['Start Date'].sort_values()
+
+powerplay_df = delivery_df[delivery_df['Powerplays']!='NP']
+powerplay_df = powerplay_df[~powerplay_df.duplicated(subset=['Match ID'])].copy()
+
+powerplay_df.sort_values('Start Date', ascending=True)
+powerplay_df = powerplay_df.reset_index(drop=True)
+
+#Players.  Read in two sets of data - from ESPN cricketers data and Wikipedia
+cricketers_df = pd.read_csv('Players.csv')
+cricketers_df
+cricketers_df = cricketers_df[['Full name', 'Playing role']]
+
+cricketers_df = cricketers_df.dropna()
+cricketers_df.rename(columns={'Full name': 'Name'}, inplace=True)
+cricketers_df['Name']
+cricketers_df[cricketers_df['Name'].str.contains("Coetzer")]
+
+wiki_df = pd.read_csv('wiki_cricketers_csv')
+
+frames = [cricketers_df, wiki_df]
+long_cricketers_df = pd.concat(frames)
+print(long_cricketers_df['Playing role'].unique())
+
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('Referee')==False ]
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('referee')==False ]
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('Coach')==False ]
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('coach')==False ]
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('author')==False ]
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('Umpire')==False ]
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('umpire')==False ]
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('Commentator')==False ]
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('Administrator')==False ]
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('3rd man')==False ]
+long_cricketers_df = long_cricketers_df[long_cricketers_df['Playing role'].str.contains('Anchor')==False ]
+
+
+long_cricketers_df.drop_duplicates(inplace = True)
+
+long_cricketers_df = long_cricketers_df.reset_index(drop=True)
+
+long_cricketers_df = long_cricketers_df.assign(Value=None)
+
+# value for players - work out how to create a column on it
+# Start off with batters, if the phrase contains occasional then take the other role, then wicket keepers
+
+for index, row in long_cricketers_df.iterrows():
+    if 'Bat' in row['Playing role']:
+        row['Value'] = 3
+    elif 'bat' in row['Playing role']:
+        row['Value'] = 3
+    elif 'all' in row['Playing role']:
+        row['Value'] = 2
+    elif 'All' in row['Playing role']:
+        row['Value'] = 2
+    elif 'bowl' in row['Playing role']:
+        row['Value'] = 1
+    elif 'Bowl' in row['Playing role']:
+        row['Value'] = 1
+    elif 'Wicketkeeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'wicketkeeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'Wicket-keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'wicket-keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'Wicket keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'wicket keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'Wicket Keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'Wicket-Keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'Wicket=keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif '12th man' in row['Playing role']:
+        row['Value'] = 1
+    elif 'Field' in row['Playing role']:
+        row['Value'] = 1
+    elif 'spin' in row['Playing role']:
+        row['Value'] = 1
+    elif 'Spin' in row['Playing role']:
+        row['Value'] = 1
+    elif 'arm' in row['Playing role']:
+        row['Value'] = 1
+
+missing_rows = long_cricketers_df[long_cricketers_df.isna().any(axis=1)]
+print(missing_rows)
+print(missing_rows.shape)
+
+#Where there are errors in the data - manually assign player role or delete row
+
+long_cricketers_df.iloc[4266]['Playing role'] = 'Batter'
+long_cricketers_df.iloc[4904]['Playing role'] = 'Batter'
+long_cricketers_df.iloc[5004]['Playing role'] = 'All-rounder'
+long_cricketers_df.iloc[5783]['Playing role'] = 'Batter'
+long_cricketers_df.iloc[6072]['Playing role'] = 'Wicket-keeper'
+long_cricketers_df.iloc[6073]['Playing role'] = 'Bowler'
+long_cricketers_df.iloc[6212]['Playing role'] = 'Wicket-keeper'
+long_cricketers_df.iloc[6538]['Playing role'] = 'Batter'
+long_cricketers_df.iloc[6686]['Playing role'] = 'Bowler'
+long_cricketers_df.iloc[7257]['Playing role'] = 'Batter'
+long_cricketers_df.iloc[7543]['Playing role'] = 'Bowler'
+long_cricketers_df.iloc[7949]['Playing role'] = 'Bowler'
+long_cricketers_df.iloc[9174]['Playing role'] = 'Batter'
+long_cricketers_df.iloc[9862]['Playing role'] = 'All-rounder'
+long_cricketers_df.iloc[10245]['Playing role'] = 'Bowler'
+
+
+long_cricketers_df=long_cricketers_df.drop(2752, axis=0) # number not name
+long_cricketers_df=long_cricketers_df.drop(5222, axis=0) #incorrect info on Wikipedia
+long_cricketers_df=long_cricketers_df.drop(6049, axis=0) #only 1 first class match
+
+long_cricketers_df = long_cricketers_df.reset_index(drop=True)
+missing_rows = long_cricketers_df[long_cricketers_df.isna().any(axis=1)]
+missing_rows
+
+#Run again now we know what's missing
+
+for index, row in long_cricketers_df.iterrows():
+    if 'Bat' in row['Playing role']:
+        row['Value'] = 3
+    elif 'bat' in row['Playing role']:
+        row['Value'] = 3
+    elif 'all' in row['Playing role']:
+        row['Value'] = 2
+    elif 'All' in row['Playing role']:
+        row['Value'] = 2
+    elif 'bowl' in row['Playing role']:
+        row['Value'] = 1
+    elif 'Bowl' in row['Playing role']:
+        row['Value'] = 1
+    elif 'Wicketkeeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'wicketkeeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'Wicket-keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'wicket-keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'Wicket keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'wicket keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'Wicket Keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'Wicket-Keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif 'Wicket=keeper' in row['Playing role']:
+        row['Value'] = 2
+    elif '12th man' in row['Playing role']:
+        row['Value'] = 1
+    elif 'Field' in row['Playing role']:
+        row['Value'] = 1
+    elif 'spin' in row['Playing role']:
+        row['Value'] = 1
+    elif 'Spin' in row['Playing role']:
+        row['Value'] = 1
+    elif 'arm' in row['Playing role']:
+        row['Value'] = 1
+
+
+missing_rows = long_cricketers_df[long_cricketers_df.isna().any(axis=1)]
+
+
+long_cricketers_df.drop(['Playing role'], axis=1, inplace=True)
