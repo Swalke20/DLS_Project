@@ -622,3 +622,16 @@ print(initial_name_dict)
 
 full_name_dict.update(initial_name_dict)
 full_name_dict['Z Haider']
+
+#fuzzywuzzy
+get_ipython().system('pip install fuzzywuzzy')
+get_ipython().system('pip install python-Levenshtein')
+
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
+
+#testing out the different types of ratio for fuzzywuzzy
+print(fuzz.ratio('AB de Villiers', 'Abraham Benjamin de Villiers'))
+print(fuzz.partial_ratio('AB de Villiers', 'Abraham Benjamin de Villiers'))
+print(fuzz.WRatio('AB de Villiers', 'Abraham Benjamin de Villiers'))
+
