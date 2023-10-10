@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 import json
 import os
+import time
+start_time = time.time()
+
 
 cricketer_filenames = []
 for file in os.listdir('C:\Sophie Folder\Birkbeck\Project\Data\Cricketers_Wiki'):
@@ -43,3 +46,8 @@ wiki_df.to_csv('wiki_cricketers.csv')
 
 dud_df = pd.DataFrame(dud_files)
 dud_csv = dud_df.to_csv('dud.csv')
+
+end_time = time.time()
+
+time_taken = end_time-start_time
+print('Execution time:', time_taken, 'seconds')
