@@ -2,9 +2,13 @@
 #Returns a smaller sample if sample and proportion are given.  If proportion 2 then sample is 1/2
 
 def data_format(train_df, test_df, val_df, sample, proportion):
-    train_df = train_df.drop(['Unnamed: 0'], axis=1)
-    test_df = test_df.drop(['Unnamed: 0'], axis=1)
-    val_df = val_df.drop(['Unnamed: 0'], axis=1)
+    try:
+        train_df = train_df.drop(['Unnamed: 0'], axis=1)
+        test_df = test_df.drop(['Unnamed: 0'], axis=1)
+        val_df = val_df.drop(['Unnamed: 0'], axis=1)
+
+    except KeyError:
+        pass
 
     train_rows = train_df.shape[1]
     test_rows = test_df.shape[1]
