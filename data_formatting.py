@@ -1,5 +1,5 @@
 #Takes in dataframes and parameters and returns train, test and validation set X and Y as dataframes.
-#Returns a smaller sample if sample and proportion are given
+#Returns a smaller sample if sample and proportion are given.  If proportion 2 then sample is 1/2
 
 def data_format(train_df, test_df, val_df, sample, proportion):
     train_df = train_df.drop(['Unnamed: 0'], axis=1)
