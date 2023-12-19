@@ -16,6 +16,7 @@ def data_format(train_df, test_df, val_df, sample, proportion):
     if sample!=None:
         #Takes the number of rows and divides by the number specified to give a sample of that size.
         #Designed to give 
+
         train_rows = train_df.shape[0]//proportion
         test_rows = test_df.shape[0]//proportion
         val_rows = val_df.shape[0]//proportion
