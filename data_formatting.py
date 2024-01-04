@@ -3,7 +3,7 @@
 #Converts dependent/ target variable into category for models
 
 def data_format(train_df, test_df, val_df, sample, proportion):  
-    from tensorflow.keras.utils import to_categorical
+    #from tensorflow.keras.utils import to_categorical
 
     try:
         train_df = train_df.drop(['Unnamed: 0'], axis=1)
