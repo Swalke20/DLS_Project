@@ -14,5 +14,12 @@ Using SQL to analyse most popular products/ best customers/ cities with most sal
 Visualisation examples in Tableau
 
 *Spotify*  
-Basic  SQL queries on Spotify Top 50 data
+Basic  SQL queries on Spotify Top 50 data  
 
+***Hep C and PCA***  
+
+Project to explore Hep C dataset and utilise PCA for dimensionality reduction  
+
+***Customer Segmentation Project***  
+
+(In progress) using k-means and hierarchical clustering for customer segmentation
