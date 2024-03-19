@@ -4,9 +4,11 @@
 
 Machine and Deep Learning project to improve upon predictive capability of Duckworth Lewis rule in cricket for ODI mens matches.  Uses Random Forest, Support Vector Machine and Neural Network models.
 
+
 ***Hep C and PCA***  
 
 Project to explore Hep C dataset and utilise PCA for dimensionality reduction 
+
 
 ***SQL mini projects***  
 
