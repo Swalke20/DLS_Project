@@ -1,0 +1,2 @@
+*IN PROGRESS*
+Mini project to explore the effect of the points system on F1 drivers' championships from 1950 - 2023.  Data from https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020
